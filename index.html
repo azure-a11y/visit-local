@@ -219,7 +219,14 @@
   }
   header.solid .goods-badge{border-color:var(--line)}
   .goods-badge .ico{width:16px; height:16px}
-  .weather-chip{display:flex; align-items:center; gap:6px; font-weight:700; font-variant-numeric:tabular-nums}
+  .weather-chip{
+    display:flex; align-items:center; justify-content:center; gap:6px; font-size:.66rem; font-weight:700;
+    letter-spacing:.03em; line-height:1.1; text-align:center; padding:5px 10px;
+    border:1px solid rgba(255,255,255,.4); border-radius:6px; min-width:68px; min-height:32px;
+    background:rgba(255,255,255,.16); backdrop-filter:blur(8px);
+    font-variant-numeric:tabular-nums;
+  }
+  header.solid .weather-chip{border-color:var(--line); background:var(--surface)}
   .weather-chip .ico{width:17px; height:17px; color:var(--gold-soft)}
   header.solid .weather-chip .ico{color:var(--gold)}
 
@@ -736,7 +743,7 @@
   <div class="head-actions">
     <button class="signup-btn" aria-label="Join">JOIN</button>
     <button class="goods-badge" aria-label="천안 굿즈"><svg class="ico" viewBox="0 0 24 24"><use href="#i-gift"/></svg>CHEONAN<br>GOODS</button>
-    <span class="weather-chip"><svg class="ico" viewBox="0 0 24 24"><use href="#i-cloud"/></svg>29.4°C</span>
+    <span class="weather-chip"><svg class="ico" viewBox="0 0 24 24"><use href="#i-cloud"/></svg><span id="weatherTemp">29.4°C</span></span>
     <button aria-label="검색"><svg class="ico" viewBox="0 0 24 24"><use href="#i-search"/></svg></button>
     <button aria-label="찜하기"><svg class="ico" viewBox="0 0 24 24"><use href="#i-heart"/></svg></button>
     <button id="menuBtn" aria-label="전체 메뉴" aria-expanded="false" aria-controls="menuOverlay"><svg class="ico" viewBox="0 0 24 24"><use href="#i-menu"/></svg></button>
@@ -1016,6 +1023,19 @@
   };
   document.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
+
+  // live Cheonan weather (Open-Meteo, no API key required)
+  var weatherTemp = document.getElementById('weatherTemp');
+  if (weatherTemp) {
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=36.8151&longitude=127.1139&current=temperature_2m&timezone=Asia%2FSeoul')
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if (data && data.current && typeof data.current.temperature_2m === 'number') {
+          weatherTemp.textContent = data.current.temperature_2m.toFixed(1) + '°C';
+        }
+      })
+      .catch(function(){ /* keep fallback value on failure */ });
+  }
 
   // review card heart toggle
   document.querySelectorAll('.heart-btn').forEach(function(btn){
