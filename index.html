@@ -1,4 +1,4 @@
-<title>Visit Local — 내 지역, 겨레의 길목에서</title>
+<title>Visit Local — 내 지역,함께나누는 길목에서</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='26' font-weight='700' font-family='Arial, sans-serif' fill='%23FFFFFF'%3EVL%3C/text%3E%3C/svg%3E">
 
 <svg width="0" height="0" style="position:absolute">
@@ -26,6 +26,7 @@
     <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h18M12 9v12M12 9C9 9 7 7.5 7 5.5A2.5 2.5 0 0 1 12 5a2.5 2.5 0 0 1 5 .5C17 7.5 15 9 12 9Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
     <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5.5 5.5 0 0 1 17.2 8.2 4 4 0 0 1 17 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 20v1M13 20v1M17 19v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-4 4v-4H4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v13M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -229,6 +230,20 @@
   header.solid .weather-chip{border-color:var(--line); background:var(--surface)}
   .weather-chip .ico{width:17px; height:17px; color:var(--gold-soft)}
   header.solid .weather-chip .ico{color:var(--gold)}
+  .weather-widget{position:relative; display:inline-flex; align-items:center}
+  .weather-panel{
+    position:absolute; right:0; top:calc(100% + 10px); z-index:60;
+    display:none; min-width:190px; padding:14px 16px; border-radius:14px;
+    background:color-mix(in srgb, var(--surface) 96%, transparent);
+    box-shadow:var(--shadow); border:1px solid var(--line);
+    backdrop-filter:blur(10px); text-align:left; color:var(--ink);
+  }
+  .weather-panel.open{display:block}
+  .weather-panel-desc{font-size:.85rem; font-weight:700; margin:0 0 10px}
+  .weather-panel-grid{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+  .weather-panel-grid li{display:flex; justify-content:space-between; gap:16px; font-size:.78rem; color:var(--ink-soft)}
+  .weather-panel-grid .wp-value{font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+  @media (max-width:480px){ .weather-panel{right:-30px} }
 
   /* ---------- hero ---------- */
   .hero{
@@ -727,7 +742,7 @@
   <div class="brand-lockup">
     <div class="brand">
       <div class="word">
-        <span class="kr"><span class="big">V</span>ISIT <span class="big">C</span>HEONAN</span>
+        <span class="kr"><span class="big">V</span>ISIT-<span class="big">L</span>OCAL</span>
         <span class="en">official visitor guide</span>
       </div>
     </div>
@@ -743,7 +758,20 @@
   <div class="head-actions">
     <button class="signup-btn" aria-label="Join">JOIN</button>
     <button class="goods-badge" aria-label="내 지역 굿즈"><svg class="ico" viewBox="0 0 24 24"><use href="#i-gift"/></svg>LOCAL<br>GOODS</button>
-    <span class="weather-chip"><svg class="ico" viewBox="0 0 24 24"><use href="#i-cloud"/></svg><span id="weatherTemp">29.4°C</span></span>
+    <div class="weather-widget">
+      <button type="button" class="weather-chip" id="weatherToggle" aria-expanded="false" aria-controls="weatherPanel">
+        <svg class="ico" viewBox="0 0 24 24"><use href="#i-cloud"/></svg><span id="weatherTemp">--°C</span>
+      </button>
+      <div class="weather-panel" id="weatherPanel">
+        <p class="weather-panel-desc" id="weatherDesc">날씨 정보를 불러오는 중입니다</p>
+        <ul class="weather-panel-grid">
+          <li><span>체감</span><span class="wp-value" id="weatherFeels">-</span></li>
+          <li><span>습도</span><span class="wp-value" id="weatherHumidity">-</span></li>
+          <li><span>강수확률</span><span class="wp-value" id="weatherPrecip">-</span></li>
+        </ul>
+      </div>
+    </div>
+    <span class="weather-chip"><svg class="ico" viewBox="0 0 24 24"><use href="#i-calendar"/></svg><span id="headerDate">07.18(토)</span></span>
     <button aria-label="검색"><svg class="ico" viewBox="0 0 24 24"><use href="#i-search"/></svg></button>
     <button aria-label="찜하기"><svg class="ico" viewBox="0 0 24 24"><use href="#i-heart"/></svg></button>
     <button id="menuBtn" aria-label="전체 메뉴" aria-expanded="false" aria-controls="menuOverlay"><svg class="ico" viewBox="0 0 24 24"><use href="#i-menu"/></svg></button>
@@ -1001,11 +1029,11 @@
     <div class="foot-brand">
       <div class="brand">
         <div class="word">
-          <span class="kr"><span class="big">V</span>ISIT <span class="big">C</span>HEONAN</span>
+          <span class="kr"><span class="big">V</span>ISIT-<span class="big">L</span>OCAL</span>
           <span class="en">official visitor guide</span>
         </div>
       </div>
-      <p>사통팔달, 겨레의 길목 — 내 지역의 공식 관광 안내 콘셉트 페이지입니다.</p>
+      <p>내 지역의 공식 관광 안내 콘셉트 페이지입니다.</p>
     </div>
   </div>
   <div class="foot-bottom wrap">
@@ -1024,17 +1052,72 @@
   document.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
 
-  // live local weather (Open-Meteo, no API key required)
+  // live local weather (server proxy -> Google Weather API, no key on the client)
   var weatherTemp = document.getElementById('weatherTemp');
+  var weatherDesc = document.getElementById('weatherDesc');
+  var weatherFeels = document.getElementById('weatherFeels');
+  var weatherHumidity = document.getElementById('weatherHumidity');
+  var weatherPrecip = document.getElementById('weatherPrecip');
   if (weatherTemp) {
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=36.8151&longitude=127.1139&current=temperature_2m&timezone=Asia%2FSeoul')
+    fetch('/api/weather')
       .then(function(res){ return res.json(); })
       .then(function(data){
-        if (data && data.current && typeof data.current.temperature_2m === 'number') {
-          weatherTemp.textContent = data.current.temperature_2m.toFixed(1) + '°C';
+        if (typeof data.temperature === 'number') {
+          weatherTemp.textContent = data.temperature.toFixed(1) + '°C';
         }
+        if (weatherDesc) weatherDesc.textContent = data.description || '날씨 정보를 표시할 수 없습니다';
+        if (weatherFeels) weatherFeels.textContent = typeof data.feelsLikeTemperature === 'number' ? data.feelsLikeTemperature.toFixed(1) + '°C' : '-';
+        if (weatherHumidity) weatherHumidity.textContent = typeof data.humidity === 'number' ? data.humidity + '%' : '-';
+        if (weatherPrecip) weatherPrecip.textContent = typeof data.precipitationProbability === 'number' ? data.precipitationProbability + '%' : '-';
       })
-      .catch(function(){ /* keep fallback value on failure */ });
+      .catch(function(){
+        if (weatherDesc) weatherDesc.textContent = '날씨 정보를 불러오지 못했습니다';
+      });
+  }
+
+  // weather chip -> click to open detail panel
+  var weatherToggle = document.getElementById('weatherToggle');
+  var weatherPanel = document.getElementById('weatherPanel');
+  if (weatherToggle && weatherPanel) {
+    function openWeatherPanel(){
+      weatherPanel.classList.add('open');
+      weatherToggle.setAttribute('aria-expanded', 'true');
+    }
+    function closeWeatherPanel(){
+      weatherPanel.classList.remove('open');
+      weatherToggle.setAttribute('aria-expanded', 'false');
+    }
+    weatherToggle.addEventListener('click', function(e){
+      e.stopPropagation();
+      weatherPanel.classList.contains('open') ? closeWeatherPanel() : openWeatherPanel();
+    });
+    document.addEventListener('click', function(e){
+      if (!weatherPanel.contains(e.target) && !weatherToggle.contains(e.target)) {
+        closeWeatherPanel();
+      }
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeWeatherPanel();
+    });
+  }
+
+  // today's date & time (Intl.DateTimeFormat only, no separate time API)
+  var headerDate = document.getElementById('headerDate');
+  if (headerDate) {
+    var headerDateFormatter = new Intl.DateTimeFormat('ko-KR', {
+      month: '2-digit', day: '2-digit', weekday: 'short',
+      hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    var renderHeaderDate = function(){
+      var parts = headerDateFormatter.formatToParts(new Date());
+      var getPart = function(type){
+        var found = parts.find(function(p){ return p.type === type; });
+        return found ? found.value : '';
+      };
+      headerDate.textContent = getPart('month') + '.' + getPart('day') + '(' + getPart('weekday') + ') ' + getPart('hour') + ':' + getPart('minute');
+    };
+    renderHeaderDate();
+    setInterval(renderHeaderDate, 60000);
   }
 
   // review card heart toggle
